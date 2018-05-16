@@ -13,8 +13,22 @@ class VerificationController extends Controller
 {
     //
     public function store(VerificationCodeRequest $request,EasySms $easySms){
-        //返回响应
-        $phone=$request->phone;
+        //取出图片验证码的缓存
+        $captchaData=\Cache::get($request->captcha_key);
+        //判断是否为空
+        if(!$captchaData){
+            //返回422校样错误
+            return $this->response->error('图片验证码已失效',422);
+        }
+        //判断验证码是否相同
+        if(!hash_equals($captchaData['code'],$request->captcha_code)){
+            //验证错就清除缓存
+            \Cache::forget($request->captcha_key);
+            //返回422校样错误
+            return $this->response->erroeUnauthorized('验证码错误');
+        }
+        //返回响应 获得缓存中的手机号数据
+        $phone=$captchaData['phone'];
         //如果当前不是生产环境 默认不发送真实短信
         if (!app()->environment('production')) {
             $code='123456';
@@ -39,6 +53,8 @@ class VerificationController extends Controller
         //把验证码和手机号写入缓存 第一个为对应键 第二个为值 第三个为有效时间
         \Cache::put($key,['phone'=>$phone,'code'=>$code],$expiredAt);
 
+        //清除图片验证码缓存
+        \Cache::forget($request->captcha_key);
         //返回服务器响应信息 使用的是Dingo中的helper trait
         return $this->response->array([
             'key' => $key,
