@@ -34,7 +34,7 @@ class SocialAuthorizationRequest extends FormRequest
         //当前第三方登录为微信 且 code授权码不存在 因为openid是微信特有的
         if($this->social_type=='weixin' && !$this->code)
         {
-            $rules['openid']='required|string'
+            $rules['openid'] = 'required|string';
         }
         return $rules;
     }

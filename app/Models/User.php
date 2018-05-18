@@ -6,8 +6,9 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Auth;
 use Spatie\Permission\Traits\HasRoles;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     use Traits\LastActivedAtHelper;
     use Traits\ActiveUserHelper;
@@ -31,7 +32,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name','phone','email', 'password', 'introduction', 'avatar',
+        'name','phone','email', 'password', 'introduction', 'avatar','weixin_openid','weixin_unionid'
     ];
 
     /**
@@ -87,5 +88,18 @@ class User extends Authenticatable
         }
 
         $this->attributes['avatar'] = $path;
+    }
+
+    //实现JWTSubject类的方法
+    public function getJWTIdentifier()
+    {
+        //返回User的id
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        //额外增加JWT载荷自定义内容
+        return [];
     }
 }

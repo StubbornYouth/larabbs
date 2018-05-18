@@ -32,7 +32,13 @@ $api->version('v1',['namespace'=>'App\Http\Controllers\Api'], function($api) {
         //图片验证码
         $api->post('captchas','CaptchasController@store')->name('api.captchas.store');
         //第三方登录路由
-        $api->post('socials/{social_type}/authorizations','AuthorizationsController@store')->name('api.socials.authorizations.store');
+        $api->post('socials/{social_type}/authorizations','AuthorizationsController@socialStore')->name('api.socials.authorizations.store');
+        //用户普通登录
+        $api->post('authorizations','AuthorizationsController@Store')->name('api.authorizations.store');
+        //替换当前用户登录授权凭证 access_token路由
+        $api->put('authorizations/current','AuthorizationsController@update')->name('api.authorizations.update');
+        //删除当前用户登录授权凭证
+        $api->delete('authorizations/current','AuthorizationsController@destroy')->name('api.authorizations.destroy');
     });
 
 });
