@@ -25,6 +25,7 @@ $api->version('v1',['namespace'=>'App\Http\Controllers\Api'], function($api) {
         'limit' => config('api.rate_limits.sign.limit'),
         'expires' =>config('api.rate_limits.sign.expires'),
     ], function($api){
+        //游客能够访问的接口
         //短信发送路由
         $api->post('verificationCodes','VerificationController@store')->name('api.verificationCodes.store');
         //用户注册路由
@@ -39,6 +40,11 @@ $api->version('v1',['namespace'=>'App\Http\Controllers\Api'], function($api) {
         $api->put('authorizations/current','AuthorizationsController@update')->name('api.authorizations.update');
         //删除当前用户登录授权凭证
         $api->delete('authorizations/current','AuthorizationsController@destroy')->name('api.authorizations.destroy');
+
+        //需要token验证的接口
+        $api->group(['middleware'=>'api.auth'],function($api){
+            $api->get('user','UserController@me')->name('api.user.show');
+        });
     });
 
 });

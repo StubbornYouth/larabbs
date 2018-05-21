@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Requests\Api\UserRequest;
+//引入用户转换器类
+use App\TransFormers\UserTransformer;
 
 class UserController extends Controller
 {
@@ -39,5 +41,13 @@ class UserController extends Controller
 
         //通过 DingoApi 提供的 created 方法返回，状态码为 201
         return $this->response->created();
+    }
+
+    public function me(){
+        //因为返回的是一个单一资源，使用$this->response->item
+        //第一个参数是用户实例，第二个参数是刚创建的转换器
+        //由于我们在父控制器中use了Dingo\Api\Routing\Helpers 这个 trait，可以直接$this->user()来获取当前登录用户
+        //$this->user()等同于\Auth::guard('api')->user()
+        return $this->response->item($this->user(),new UserTransformer);
     }
 }
