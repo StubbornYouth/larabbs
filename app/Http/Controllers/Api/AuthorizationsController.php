@@ -102,7 +102,7 @@ class AuthorizationsController extends Controller
             'access_token' => $token,
             'token_type' => 'Bearer',
             //过期时间
-            'expires_in' => \Auth::guard('api')->factory()->getTTL() * 60
+            'expires_in' => \Auth::guard('api')->factory()->getTTL() * 60,
         ]);
     }
     //更新用户access_token 登录授权
